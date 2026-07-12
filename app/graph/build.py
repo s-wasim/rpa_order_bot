@@ -18,17 +18,17 @@ def load_inventory(state: OrderState) -> OrderState:
             .filter(Inventory.qty + Inventory.on_order < Inventory.reorder_threshold)
             .all()
         )
-    items = [
-        {
-            "sku": i.sku,
-            "name": i.name,
-            "qty": i.qty,
-            "reorder_threshold": i.reorder_threshold,
-            "reorder_qty": i.reorder_qty,
-            "on_order": i.on_order,
-        }
-        for i in low_stock
-    ]
+        items = [
+            {
+                "sku": i.sku,
+                "name": i.name,
+                "qty": i.qty,
+                "reorder_threshold": i.reorder_threshold,
+                "reorder_qty": i.reorder_qty,
+                "on_order": i.on_order,
+            }
+            for i in low_stock
+        ]
 
     from app.settings import HEADED
     context = create_context(headless=not HEADED)

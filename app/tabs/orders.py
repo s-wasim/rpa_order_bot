@@ -8,20 +8,13 @@ def render_orders():
 
     with get_session() as session:
         orders = session.query(Order).order_by(Order.created_at.desc()).all()
-
-    if not orders:
-        st.info("No orders have been placed yet.")
-        return
-
-    for order in orders:
-        with st.expander(
-            f"**{order.demomart_order_no}** — "
-            f"${order.total:.2f} — "
-            f"{order.created_at.strftime('%Y-%m-%d %H:%M') if order.created_at else 'N/A'}"
-        ):
-            st.write(f"Run ID: {order.run_id}")
-            if order.items:
-                item_data = [
+        order_views = [
+            {
+                "demomart_order_no": order.demomart_order_no,
+                "total": order.total,
+                "created_at": order.created_at,
+                "run_id": order.run_id,
+                "items": [
                     {
                         "SKU": i.sku or "-",
                         "Product": i.product_title,
@@ -30,9 +23,25 @@ def render_orders():
                         "Total": f"${i.qty * i.unit_price:.2f}",
                     }
                     for i in order.items
-                ]
+                ],
+            }
+            for order in orders
+        ]
+
+    if not order_views:
+        st.info("No orders have been placed yet.")
+        return
+
+    for order in order_views:
+        with st.expander(
+            f"**{order['demomart_order_no']}** — "
+            f"${order['total']:.2f} — "
+            f"{order['created_at'].strftime('%Y-%m-%d %H:%M') if order['created_at'] else 'N/A'}"
+        ):
+            st.write(f"Run ID: {order['run_id']}")
+            if order["items"]:
                 st.data_editor(
-                    item_data,
+                    order["items"],
                     column_config={
                         "SKU": st.column_config.TextColumn("SKU", width="small"),
                         "Product": st.column_config.TextColumn("Product", width="medium"),

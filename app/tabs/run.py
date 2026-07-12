@@ -11,31 +11,51 @@ def render_run():
 
     with get_session() as session:
         runs = session.query(Run).order_by(Run.created_at.desc()).limit(20).all()
+        run_summaries = [{"id": r.id, "created_at": r.created_at} for r in runs]
 
-    if not runs:
+    if not run_summaries:
         st.info("No runs yet. Start a reorder from the Inventory tab.")
         return
 
-    run_options = {f"Run #{r.id} ({r.created_at.strftime('%Y-%m-%d %H:%M:%S')})": r.id for r in runs}
+    run_options = {
+        f"Run #{r['id']} ({r['created_at'].strftime('%Y-%m-%d %H:%M:%S')})": r["id"]
+        for r in run_summaries
+    }
     selected_label = st.selectbox("Select Run", list(run_options.keys()), index=0)
     selected_id = run_options[selected_label]
 
     with get_session() as session:
         run = session.query(Run).filter(Run.id == selected_id).first()
-        steps = (
+        steps_q = (
             session.query(RunStep)
             .filter(RunStep.run_id == selected_id)
             .order_by(RunStep.seq)
             .all()
         )
+        run_view = None if run is None else {
+            "plan_json": run.plan_json,
+            "summary_json": run.summary_json,
+            "status": run.status,
+        }
+        steps = [
+            {
+                "label": s.label,
+                "seq": s.seq,
+                "status": s.status,
+                "detail": s.detail,
+                "screenshot_path": s.screenshot_path,
+                "id": s.id,
+            }
+            for s in steps_q
+        ]
 
-    if not run:
+    if not run_view:
         st.warning("Run not found.")
         return
 
-    if run.plan_json:
+    if run_view["plan_json"]:
         with st.expander("📋 Plan Card", expanded=True):
-            plan = run.plan_json
+            plan = run_view["plan_json"]
             if isinstance(plan, list):
                 for p in plan:
                     sku = p.get("sku", "?")
@@ -51,7 +71,7 @@ def render_run():
 
     if not steps:
         st.info("No steps recorded yet.")
-        if run.status == "running":
+        if run_view["status"] == "running":
             st.rerun()
         return
 
@@ -62,27 +82,27 @@ def render_run():
             "matched": "#16a34a",
             "skipped": "#d97706",
             "failed": "#dc2626",
-        }.get(step.status, "#6b7280")
+        }.get(step["status"], "#6b7280")
 
         cols = st.columns([3, 1, 6])
         with cols[0]:
-            st.markdown(f"**{step.label}**")
-            st.caption(f"Step {step.seq}")
+            st.markdown(f"**{step['label']}**")
+            st.caption(f"Step {step['seq']}")
         with cols[1]:
             st.markdown(
                 f"<span style='background:{status_color};color:white;"
-                f"padding:2px 8px;border-radius:4px;font-size:0.8rem;'>{step.status}</span>",
+                f"padding:2px 8px;border-radius:4px;font-size:0.8rem;'>{step['status']}</span>",
                 unsafe_allow_html=True,
             )
         with cols[2]:
-            if step.detail:
-                st.caption(step.detail)
-            if step.screenshot_path:
-                ss_path = Path(step.screenshot_path)
+            if step["detail"]:
+                st.caption(step["detail"])
+            if step["screenshot_path"]:
+                ss_path = Path(step["screenshot_path"])
                 if ss_path.exists():
                     cols2 = st.columns([1, 5])
                     with cols2[0]:
-                        clicked = st.button(f"📷 View screenshot", key=f"ss_{step.id}")
+                        clicked = st.button(f"📷 View screenshot", key=f"ss_{step['id']}")
                     if clicked:
                         @st.dialog("Screenshot", width="large")
                         def show_screenshot(path):
@@ -91,8 +111,8 @@ def render_run():
 
         st.divider()
 
-    if run.summary_json:
-        summary = run.summary_json
+    if run_view["summary_json"]:
+        summary = run_view["summary_json"]
         st.subheader("Run Summary")
         c1, c2, c3, c4 = st.columns(4)
         c1.metric("Ordered", summary.get("ordered", 0))
@@ -102,6 +122,6 @@ def render_run():
         if summary.get("order_number"):
             st.success(f"Order Number: {summary['order_number']}")
 
-    if run.status == "running":
+    if run_view["status"] == "running":
         time.sleep(2)
         st.rerun()

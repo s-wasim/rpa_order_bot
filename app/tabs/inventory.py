@@ -10,18 +10,18 @@ def render_inventory():
     with get_session() as session:
         items = session.query(Inventory).order_by(Inventory.sku).all()
 
-    data = []
-    for item in items:
-        is_low = (item.qty + item.on_order) < item.reorder_threshold
-        data.append({
-            "SKU": item.sku,
-            "Name": item.name,
-            "Qty": item.qty,
-            "Threshold": item.reorder_threshold,
-            "Reorder Qty": item.reorder_qty,
-            "On Order": item.on_order,
-            "_low": is_low,
-        })
+        data = []
+        for item in items:
+            is_low = (item.qty + item.on_order) < item.reorder_threshold
+            data.append({
+                "SKU": item.sku,
+                "Name": item.name,
+                "Qty": item.qty,
+                "Threshold": item.reorder_threshold,
+                "Reorder Qty": item.reorder_qty,
+                "On Order": item.on_order,
+                "_low": is_low,
+            })
 
     low_count = sum(1 for d in data if d["_low"])
 
