@@ -2,7 +2,7 @@
 {% block title %}{{ product.title }} - DemoMart{% endblock %}
 {% block content %}
 <div class="product-detail">
-    <div class="product-detail-img">📦 Product Image</div>
+    <div class="product-detail-img"><img src="{{ product.image_url }}" alt="{{ product.title }}" data-testid="product-image"></div>
     <div class="product-detail-info">
         <h1>{{ product.title }}</h1>
         <div class="price" data-testid="result-price">${{ "%.2f"|format(product.price) }}</div>

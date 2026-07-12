@@ -24,7 +24,8 @@ def init_db():
             title TEXT NOT NULL,
             description TEXT DEFAULT '',
             price REAL NOT NULL,
-            stock INTEGER DEFAULT 1
+            stock INTEGER DEFAULT 1,
+            image_url TEXT DEFAULT ''
         );
         CREATE TABLE IF NOT EXISTS orders (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -41,17 +42,30 @@ def init_db():
             unit_price REAL NOT NULL
         );
     """)
-    cur = conn.execute("SELECT COUNT(*) FROM products")
-    if cur.fetchone()[0] == 0:
-        catalog_path = os.path.join(os.path.dirname(__file__), "catalog.json")
-        with open(catalog_path) as f:
-            products = json.load(f)
+
+    # Migration: add image_url to pre-existing databases that lack it.
+    cols = {row["name"] for row in conn.execute("PRAGMA table_info(products)")}
+    if "image_url" not in cols:
+        conn.execute("ALTER TABLE products ADD COLUMN image_url TEXT DEFAULT ''")
+
+    catalog_path = os.path.join(os.path.dirname(__file__), "catalog.json")
+    with open(catalog_path) as f:
+        products = json.load(f)
+
+    if conn.execute("SELECT COUNT(*) FROM products").fetchone()[0] == 0:
         for p in products:
             conn.execute(
-                "INSERT INTO products (id, title, description, price, stock) VALUES (?, ?, ?, ?, ?)",
-                (p["id"], p["title"], p["description"], p["price"], 1 if p["stock"] else 0),
+                "INSERT INTO products (id, title, description, price, stock, image_url) VALUES (?, ?, ?, ?, ?, ?)",
+                (p["id"], p["title"], p["description"], p["price"], 1 if p["stock"] else 0, p.get("image_url", "")),
             )
-        conn.commit()
+    else:
+        # Backfill image_url for rows seeded before images existed.
+        for p in products:
+            conn.execute(
+                "UPDATE products SET image_url = ? WHERE id = ? AND (image_url IS NULL OR image_url = '')",
+                (p.get("image_url", ""), p["id"]),
+            )
+    conn.commit()
     conn.close()
 
 

@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" role="img" aria-label="Leather desk mat">
+  <rect width="400" height="300" fill="#eef2ff"/>
+  <rect x="80" y="80" width="240" height="104" rx="12" fill="#dbeafe" stroke="#1e40af" stroke-width="8"/>
+  <rect x="98" y="98" width="204" height="68" rx="6" fill="none" stroke="#1e40af" stroke-width="3" stroke-dasharray="10 8">
+    <animate attributeName="stroke-dashoffset" values="0;-36" dur="2.4s" repeatCount="indefinite"/>
+  </rect>
+  <text x="200" y="232" text-anchor="middle" font-family="sans-serif" font-size="22" font-weight="600" fill="#1e40af">Leather Desk Mat</text>
+</svg>
