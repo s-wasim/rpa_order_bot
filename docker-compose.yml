@@ -1,0 +1,57 @@
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: rpa_bot
+      POSTGRES_USER: rpa
+      POSTGRES_PASSWORD: rpa_secret
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U rpa -d rpa_bot"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    networks:
+      - rpa-net
+
+  mockshop:
+    build: ./mockshop
+    ports:
+      - "8090:8090"
+    volumes:
+      - mockshop_data:/data
+    networks:
+      - rpa-net
+
+  app:
+    build: ./app
+    ports:
+      - "8501:8501"
+    environment:
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-sk-ant-...}
+      DATABASE_URL: ${DATABASE_URL:-postgresql+psycopg2://rpa:rpa_secret@db:5432/rpa_bot}
+      MOCKSHOP_URL: ${MOCKSHOP_URL:-http://mockshop:8090}
+      HEADED: ${HEADED:-false}
+      DATA_DIR: /app/data
+    depends_on:
+      db:
+        condition: service_healthy
+      mockshop:
+        condition: service_started
+    volumes:
+      # Named volume (not a host bind) so the container's non-root user can write
+      # screenshots; reset with `docker compose down -v`.
+      - app_data:/app/data
+    networks:
+      - rpa-net
+
+volumes:
+  pgdata:
+  mockshop_data:
+  app_data:
+
+networks:
+  rpa-net:
+    internal: false
