@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block title %}Checkout - DemoMart{% endblock %}
+{% block content %}
+<h1>Checkout</h1>
+<div style="display:flex;gap:2rem;flex-wrap:wrap;">
+    <div style="flex:1;min-width:300px;">
+        <form action="/checkout" method="post">
+            <div class="form-group">
+                <label for="name">Full Name</label>
+                <input type="text" id="name" name="name" value="John Doe" data-testid="checkout-name" required>
+            </div>
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" name="email" value="john@example.com" data-testid="checkout-email" required>
+            </div>
+            <div class="form-group">
+                <label for="phone">Phone</label>
+                <input type="tel" id="phone" name="phone" value="+1-555-123-4567" data-testid="checkout-phone" required>
+            </div>
+            <div class="form-group">
+                <label for="address">Shipping Address</label>
+                <input type="text" id="address" name="address" value="123 Main Street, Springfield, IL 62701" data-testid="checkout-address" required>
+            </div>
+            <button type="submit" class="btn btn-primary" data-testid="checkout-submit">Place Order</button>
+        </form>
+    </div>
+    <div style="flex:1;min-width:250px;">
+        <h2>Order Summary</h2>
+        <table class="cart-table">
+            <thead>
+                <tr><th>Item</th><th>Qty</th><th>Price</th></tr>
+            </thead>
+            <tbody>
+                {% for item in cart %}
+                <tr>
+                    <td>{{ item.title }}</td>
+                    <td>{{ item.qty }}</td>
+                    <td>${{ "%.2f"|format(item.price * item.qty) }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <p style="text-align:right;font-size:1.2rem;font-weight:700;margin-top:1rem;">Total: ${{ "%.2f"|format(total) }}</p>
+    </div>
+</div>
+{% endblock %}

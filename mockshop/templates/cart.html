@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block title %}Cart - DemoMart{% endblock %}
+{% block content %}
+<h1>Shopping Cart</h1>
+{% if cart %}
+<table class="cart-table">
+    <thead>
+        <tr>
+            <th>Product</th>
+            <th>Price</th>
+            <th>Quantity</th>
+            <th>Total</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for item in cart %}
+        <tr>
+            <td data-testid="cart-item-title">{{ item.title }}</td>
+            <td>${{ "%.2f"|format(item.price) }}</td>
+            <td>
+                <form action="/cart/update" method="post" style="display:flex;align-items:center;gap:0.5rem;">
+                    <input type="hidden" name="product_id" value="{{ item.product_id }}">
+                    <input type="number" name="qty" value="{{ item.qty }}" min="0" class="qty-input" data-testid="cart-item-qty" style="width:60px;">
+                    <button type="submit" class="btn btn-outline btn-sm">Update</button>
+                </form>
+            </td>
+            <td>${{ "%.2f"|format(item.price * item.qty) }}</td>
+            <td>
+                <form action="/cart/update" method="post">
+                    <input type="hidden" name="product_id" value="{{ item.product_id }}">
+                    <input type="hidden" name="qty" value="0">
+                    <button type="submit" class="btn btn-danger btn-sm">Remove</button>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+<div style="text-align:right;margin-top:1.5rem;">
+    <p style="font-size:1.3rem;font-weight:700;">Total: ${{ "%.2f"|format(total) }}</p>
+    <a href="/checkout" class="btn btn-primary" data-testid="checkout-link" style="margin-top:0.5rem;">Proceed to Checkout</a>
+</div>
+{% else %}
+<div class="empty-state">
+    <p>Your cart is empty.</p>
+    <a href="/" class="btn btn-primary" style="margin-top:1rem;">Continue Shopping</a>
+</div>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block title %}Order Confirmed - DemoMart{% endblock %}
+{% block content %}
+<div class="confirm-box">
+    <h1>✅ Order Placed!</h1>
+    <p>Your order number is:</p>
+    <div class="order-number" data-testid="order-number">{{ order.order_no }}</div>
+    <p style="margin-bottom:1.5rem;">Thank you for your purchase. You will receive a confirmation email shortly.</p>
+    <h3>Order Summary</h3>
+    <table class="cart-table" style="text-align:left;">
+        <thead>
+            <tr><th>Item</th><th>Qty</th><th>Price</th></tr>
+        </thead>
+        <tbody>
+            {% for item in order.order_items %}
+            <tr>
+                <td>{{ item.product_title }}</td>
+                <td>{{ item.qty }}</td>
+                <td>${{ "%.2f"|format(item.qty * item.unit_price) }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <p style="font-size:1.2rem;font-weight:700;margin-top:1rem;">Total: ${{ "%.2f"|format(order.items_total) }}</p>
+    <a href="/" class="btn btn-primary" style="margin-top:1rem;">Continue Shopping</a>
+</div>
+{% endblock %}

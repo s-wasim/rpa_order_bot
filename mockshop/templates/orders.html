@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block title %}Orders - DemoMart{% endblock %}
+{% block content %}
+<h1>All Orders</h1>
+{% if orders %}
+<table class="orders-table">
+    <thead>
+        <tr>
+            <th>Order No</th>
+            <th>Date</th>
+            <th>Items</th>
+            <th>Total</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for order in orders %}
+        <tr>
+            <td><strong>{{ order.order_no }}</strong></td>
+            <td>{{ order.created_at[:10] }}</td>
+            <td>
+                <ul style="list-style:none;padding:0;">
+                {% for item in order.order_items %}
+                    <li class="order-items">{{ item.product_title }} × {{ item.qty }} — ${{ "%.2f"|format(item.qty * item.unit_price) }}</li>
+                {% endfor %}
+                </ul>
+            </td>
+            <td>${{ "%.2f"|format(order.items_total) }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<div class="empty-state">
+    <p>No orders placed yet.</p>
+</div>
+{% endif %}
+{% endblock %}

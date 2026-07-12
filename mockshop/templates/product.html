@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}{{ product.title }} - DemoMart{% endblock %}
+{% block content %}
+<div class="product-detail">
+    <div class="product-detail-img">📦 Product Image</div>
+    <div class="product-detail-info">
+        <h1>{{ product.title }}</h1>
+        <div class="price" data-testid="result-price">${{ "%.2f"|format(product.price) }}</div>
+        <p class="desc">{{ product.description }}</p>
+        {% if product.stock %}
+            <span class="badge badge-success">In Stock</span>
+        {% else %}
+            <span class="badge badge-danger">Out of Stock</span>
+        {% endif %}
+        <form action="/cart/add" method="post" style="margin-top: 1.5rem;">
+            <input type="hidden" name="product_id" value="{{ product.id }}">
+            <input type="hidden" name="title" value="{{ product.title }}">
+            <input type="hidden" name="price" value="{{ product.price }}">
+            <label for="qty">Quantity:</label>
+            <input type="number" id="qty" name="qty" value="1" min="1" class="qty-input" data-testid="qty-input">
+            <button type="submit" class="btn btn-primary" data-testid="add-to-cart" style="margin-left: 0.5rem;">Add to Cart</button>
+        </form>
+    </div>
+</div>
+{% endblock %}
