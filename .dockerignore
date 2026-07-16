@@ -1,0 +1,9 @@
+.git
+.env
+docs
+DEMO_SCRIPT.md
+README.md
+**/__pycache__
+**/*.pyc
+**/.pytest_cache
+frontend/uploads/.gitkeep
