@@ -37,6 +37,15 @@ def home(request: Request):
     })
 
 
+@app.get("/api/products")
+def api_products():
+    from db import _get_conn, _row_to_dict
+    conn = _get_conn()
+    products = [_row_to_dict(r) for r in conn.execute("SELECT * FROM products ORDER BY id").fetchall()]
+    conn.close()
+    return products
+
+
 @app.get("/search")
 def search(request: Request, q: str = ""):
     results = search_products(q) if q else []
