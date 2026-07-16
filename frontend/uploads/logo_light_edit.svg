@@ -1,0 +1,14 @@
+<svg width="100%" viewBox="0 0 204 204" role="img" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <title>VeloRelAI relay chevron icon concept</title>
+  <desc>Three forward-pointing chevrons escalating in brightness from deep navy to bright blue, on a light rounded app-icon tile.</desc>
+
+  
+
+  <rect x="2" y="2" width="200" height="200" rx="44" fill="#eff6ff" stroke="#dbeafe" stroke-width="2"></rect>
+
+  <g id="chevrons">
+    <path d="M41 60 L71 102 L41 144" stroke="#1e40af" stroke-width="24" stroke-linecap="round" stroke-linejoin="round"></path>
+    <path d="M87 60 L117 102 L87 144" stroke="#3b82f6" stroke-width="24" stroke-linecap="round" stroke-linejoin="round"></path>
+    <path d="M133 60 L163 102 L133 144" stroke="#60a5fa" stroke-width="24" stroke-linecap="round" stroke-linejoin="round"></path>
+  </g>
+</svg>

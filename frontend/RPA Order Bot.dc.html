@@ -1,0 +1,839 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;450;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap"></link>
+  <style>
+    *{box-sizing:border-box}
+    html,body{margin:0;padding:0}
+    @keyframes chevronPulse{0%{filter:brightness(1)}50%{filter:brightness(1.7)}100%{filter:brightness(1)}}
+    @keyframes splashDraw{from{stroke-dashoffset:70}to{stroke-dashoffset:0}}
+    @keyframes fadeIn{from{opacity:0}to{opacity:1}}
+    @keyframes panelSlideInFwd{from{opacity:0;transform:translateX(36px)}to{opacity:1;transform:translateX(0)}}
+    @keyframes panelSlideInBack{from{opacity:0;transform:translateX(-36px)}to{opacity:1;transform:translateX(0)}}
+    @keyframes rowSpring{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+    @keyframes pulseHalo{0%{box-shadow:0 0 0 0 rgba(96,165,250,.45)}100%{box-shadow:0 0 0 9px rgba(96,165,250,0)}}
+    @keyframes shakeX{0%,100%{transform:translateX(0)}25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+    @keyframes glowDriftA{0%{transform:translate(0,0)}100%{transform:translate(40px,-24px)}}
+    @keyframes glowDriftB{0%{transform:translate(0,0)}100%{transform:translate(-30px,20px)}}
+    @keyframes flyUp{0%{opacity:1;transform:translateY(0) scale(1)}100%{opacity:0;transform:translateY(-46px) scale(.82)}}
+    @keyframes chipIn{from{opacity:0;transform:translateY(10px) scale(.9)}to{opacity:1;transform:translateY(0) scale(1)}}
+    @keyframes launchExit{from{opacity:1;transform:translateX(0)}to{opacity:0;transform:translateX(-60px)}}
+    @keyframes shimmerSweep{0%{background-position:-160% 0}100%{background-position:160% 0}}
+    @keyframes greenSweep{0%{background-color:rgba(22,163,74,.22)}100%{background-color:rgba(22,163,74,0)}}
+    @keyframes tickerDot{0%{box-shadow:0 0 0 0 rgba(220,38,38,.5)}100%{box-shadow:0 0 0 6px rgba(220,38,38,0)}}
+    @media (prefers-reduced-motion: reduce){*{animation-duration:.01ms !important;transition-duration:.01ms !important}}
+  </style>
+</helmet>
+<div style="min-height:100vh;width:100%;position:relative;font-family:Inter,system-ui,sans-serif;background:{{ T.bg }};color:{{ T.textHi }};transition:background .35s,color .35s;overflow-x:hidden" onKeyDown="{{ onGlobalKeyDown }}" tabIndex="-1">
+  <div style="position:fixed;inset:0;overflow:hidden;pointer-events:none;z-index:0">
+    <div style="position:absolute;top:-10%;left:10%;width:520px;height:520px;border-radius:50%;background:{{ T.glow1 }};filter:blur(60px);animation:glowDriftA 18s ease-in-out infinite alternate"></div>
+    <div style="position:absolute;bottom:-15%;right:5%;width:480px;height:480px;border-radius:50%;background:{{ T.glow2 }};filter:blur(60px);animation:glowDriftB 22s ease-in-out infinite alternate"></div>
+  </div>
+
+  <sc-if value="{{ splash }}" hint-placeholder-val="{{ true }}">
+    <div style="position:fixed;inset:0;z-index:50;display:flex;align-items:center;justify-content:center;background:{{ T.bg }};opacity:{{ splashOpacity }};transition:opacity .45s ease">
+      <svg width="88" height="88" viewBox="0 0 64 64" fill="none">
+        <rect width="64" height="64" rx="14" fill="{{ T.tileBg }}"></rect>
+        <path d="M8 16 L19 32 L8 48" stroke="#1e40af" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="70" style="animation:splashDraw 1s .1s ease forwards"></path>
+        <path d="M26 16 L37 32 L26 48" stroke="#3b82f6" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="70" style="animation:splashDraw 1s .3s ease forwards"></path>
+        <path d="M44 16 L55 32 L44 48" stroke="#60a5fa" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="70" style="animation:splashDraw 1s .5s ease forwards"></path>
+      </svg>
+    </div>
+  </sc-if>
+
+  <div style="position:relative;z-index:1;display:flex;flex-direction:column;min-height:100vh">
+    <div style="height:64px;flex:0 0 auto;display:flex;align-items:center;justify-content:space-between;padding:0 20px;background:{{ T.glassBg }};backdrop-filter:blur(16px) saturate(140%);border-bottom:1px solid {{ T.glassBrd }};box-shadow:{{ T.shadow }};position:sticky;top:0;z-index:20;transition:background .35s,border-color .35s">
+      <div onMouseEnter="{{ pulseLogo }}" style="cursor:pointer;display:flex;align-items:center">
+        <svg width="150" height="47" viewBox="0 0 180 56" fill="none">
+          <rect width="180" height="56" rx="8" fill="{{ T.tileBg }}" stroke="{{ T.tileBrd }}"></rect>
+          <path d="M18 14 L29 28 L18 42" stroke="#1e40af" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round" style="animation:{{ logoAnim0 }}"></path>
+          <path d="M33 14 L44 28 L33 42" stroke="#3b82f6" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round" style="animation:{{ logoAnim1 }}"></path>
+          <path d="M48 14 L59 28 L48 42" stroke="#60a5fa" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round" style="animation:{{ logoAnim2 }}"></path>
+          <text x="72" y="35" font-family="Inter, sans-serif" font-size="19" font-weight="600" letter-spacing="-0.19"><tspan fill="{{ T.textHi }}">VeloRel</tspan><tspan fill="#3b82f6">AI</tspan></text>
+        </svg>
+      </div>
+
+      <div style="display:flex;align-items:center;gap:12px">
+        <sc-if value="{{ runPillVisible }}">
+          <div onClick="{{ goToLiveRun }}" style="cursor:pointer;display:flex;align-items:center;gap:8px;padding:6px 12px 6px 8px;border-radius:999px;background:{{ runPillBg }};backdrop-filter:blur(16px);border:1px solid {{ T.glassBrd }};transition:background .3s" aria-live="polite">
+            <svg width="26" height="14" viewBox="0 0 64 28" fill="none">
+              <path d="M4 6 L14 14 L4 22" stroke="#1e40af" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round" style="animation:{{ pillChevAnim0 }}"></path>
+              <path d="M22 6 L32 14 L22 22" stroke="#3b82f6" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round" style="animation:{{ pillChevAnim1 }}"></path>
+              <path d="M40 6 L50 14 L40 22" stroke="#60a5fa" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round" style="animation:{{ pillChevAnim2 }}"></path>
+            </svg>
+            <span style="font-size:13px;font-weight:600;color:{{ T.textHi }}">{{ runPillText }}</span>
+          </div>
+        </sc-if>
+
+        <div onClick="{{ toggleTheme }}" style="cursor:pointer;width:52px;height:28px;border-radius:999px;background:{{ T.insetBg }};border:1px solid {{ T.glassBrd }};position:relative;transition:background .35s" role="button" aria-label="Toggle theme">
+          <div style="position:absolute;top:2px;left:{{ toggleKnobLeft }};width:22px;height:22px;border-radius:50%;background:{{ relayGrad }};transition:left .3s cubic-bezier(.4,0,.2,1);display:flex;align-items:center;justify-content:center;font-size:12px">{{ toggleGlyph }}</div>
+        </div>
+
+        <div style="display:flex;align-items:center;gap:6px" title="{{ healthTooltip }}">
+          <div style="width:10px;height:10px;border-radius:50%;background:{{ healthColor }};animation:{{ healthPulseAnim }}"></div>
+        </div>
+      </div>
+    </div>
+
+    <sc-if value="{{ bannerVisible }}">
+      <div style="background:rgba(217,119,6,0.16);border-bottom:1px solid rgba(217,119,6,0.4);color:{{ T.textHi }};padding:10px 20px;font-size:13px;display:flex;align-items:center;gap:8px;animation:rowSpring .35s ease both">
+        <span style="color:#d97706;font-weight:600">⚠ {{ bannerText }}</span>
+      </div>
+    </sc-if>
+
+    <div style="flex:1;display:flex;min-height:0">
+      <div style="width:200px;flex:0 0 auto;padding:16px 12px;display:flex;flex-direction:column;gap:6px;background:{{ T.glassBg }};backdrop-filter:blur(16px);border-right:1px solid {{ T.glassBrd }};transition:background .35s,border-color .35s">
+        <button onClick="{{ navInventory }}" style="all:unset;cursor:pointer;display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;border-left:3px solid {{ navBorder0 }};background:{{ navBg0 }};transition:background .2s" style-hover="background:{{ T.insetBg }}">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="{{ navIconColor0 }}" stroke-width="2"><rect x="3" y="3" width="8" height="8" rx="1.5"></rect><rect x="13" y="3" width="8" height="8" rx="1.5"></rect><rect x="3" y="13" width="8" height="8" rx="1.5"></rect><rect x="13" y="13" width="8" height="8" rx="1.5"></rect></svg>
+          <span style="font-size:14px;font-weight:600;color:{{ navTextColor0 }}">Inventory</span>
+        </button>
+        <button onClick="{{ navRun }}" style="all:unset;cursor:pointer;display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;border-left:3px solid {{ navBorder1 }};background:{{ navBg1 }};transition:background .2s" style-hover="background:{{ T.insetBg }}">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="{{ navIconColor1 }}" stroke-width="2"><rect x="4" y="4" width="16" height="14" rx="2"></rect><circle cx="9" cy="11" r="1.4" fill="{{ navIconColor1 }}" stroke="none"></circle><circle cx="15" cy="11" r="1.4" fill="{{ navIconColor1 }}" stroke="none"></circle><path d="M12 4 V1M9 20 L9 22M15 20 L15 22"></path></svg>
+          <span style="font-size:14px;font-weight:600;color:{{ navTextColor1 }}">Run</span>
+        </button>
+        <button onClick="{{ navOrders }}" style="all:unset;cursor:pointer;display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;border-left:3px solid {{ navBorder2 }};background:{{ navBg2 }};transition:background .2s" style-hover="background:{{ T.insetBg }}">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="{{ navIconColor2 }}" stroke-width="2"><path d="M6 2 H18 V22 L15 20 L12 22 L9 20 L6 22 Z"></path><path d="M9 8 H15M9 12 H15M9 16 H13"></path></svg>
+          <span style="font-size:14px;font-weight:600;color:{{ navTextColor2 }}">Orders</span>
+        </button>
+        <button onClick="{{ navStorefront }}" style="all:unset;cursor:pointer;display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;border-left:3px solid {{ navBorder3 }};background:{{ navBg3 }};transition:background .2s" style-hover="background:{{ T.insetBg }}">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="{{ navIconColor3 }}" stroke-width="2"><path d="M6 8 L7 3 H17 L18 8"></path><rect x="4" y="8" width="16" height="13" rx="2"></rect><path d="M9 12 a3 3 0 0 0 6 0"></path></svg>
+          <span style="font-size:14px;font-weight:600;color:{{ navTextColor3 }}">Storefront</span>
+        </button>
+
+        <div style="margin-top:14px;padding-top:14px;border-top:1px solid {{ T.glassBrd }}">
+          <div style="font-size:11px;font-weight:600;letter-spacing:.04em;color:{{ T.textLo }};text-transform:uppercase;padding:0 4px 8px">Low stock</div>
+          <div style="background:{{ T.insetBg }};border-radius:10px;padding:6px;display:flex;flex-direction:column;gap:2px">
+            <sc-if value="{{ hasLowItems }}" hint-placeholder-val="{{ true }}">
+              <sc-for list="{{ lowItems }}" as="item" hint-placeholder-count="3">
+                <div onClick="{{ item.jump }}" style="cursor:pointer;display:flex;align-items:center;gap:7px;padding:6px 6px;border-radius:7px;transition:background .2s" style-hover="background:rgba(220,38,38,0.12)">
+                  <div style="width:6px;height:6px;border-radius:50%;background:#dc2626;animation:tickerDot 1.6s infinite"></div>
+                  <span style="font-size:12px;font-family:'JetBrains Mono',monospace;color:{{ T.textHi }};white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ item.sku }}</span>
+                </div>
+              </sc-for>
+            </sc-if>
+            <sc-if value="{{ hasLowItems }}" hint-placeholder-val="{{ true }}">
+            </sc-if>
+            <div style="{{ noLowStyle }}">
+              <span style="font-size:12px;color:{{ T.textLo }}">All stocked ✓</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div style="flex:1;min-width:0;overflow-y:auto;padding:24px 28px 60px;background:{{ T.glassBg2 }}">
+        <div key="{{ panel }}" style="animation:{{ panelAnim }} .45s cubic-bezier(.22,1,.36,1) both;max-width:1080px;margin:0 auto">
+
+          <sc-if value="{{ isInventory }}" hint-placeholder-val="{{ true }}">
+            <div>
+              <div style="display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:18px">
+                <h1 style="font-size:22px;font-weight:600;letter-spacing:-0.01em;margin:0">Inventory Management</h1>
+                <div style="display:flex;gap:10px">
+                  <div style="padding:7px 14px;border-radius:999px;background:{{ T.glassBg }};border:1px solid {{ T.glassBrd }};font-size:13px;font-weight:600;backdrop-filter:blur(16px)">{{ skuCount }} SKUs</div>
+                  <div style="padding:7px 14px;border-radius:999px;background:{{ lowChipBg }};border:1px solid {{ T.glassBrd }};font-size:13px;font-weight:600;color:{{ lowChipColor }};backdrop-filter:blur(16px);animation:{{ lowChipPulse }}">{{ lowChipLabel }}</div>
+                </div>
+              </div>
+
+              <div style="background:{{ T.insetBg }};backdrop-filter:blur(8px);border:1px solid {{ T.glassBrd }};border-radius:16px;overflow:hidden;margin-bottom:14px">
+                <div style="display:grid;grid-template-columns:1.3fr 1.8fr .7fr .9fr .9fr .8fr;padding:10px 16px;font-size:11px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:{{ T.textLo }};border-bottom:1px solid {{ T.glassBrd }}">
+                  <div>SKU</div><div>Name</div><div>Qty</div><div>Threshold</div><div>Reorder Qty</div><div>On Order</div>
+                </div>
+                <sc-for list="{{ rows }}" as="row" hint-placeholder-count="5">
+                  <div style="display:grid;grid-template-columns:1.3fr 1.8fr .7fr .9fr .9fr .8fr;padding:11px 16px;align-items:center;font-size:13.5px;border-bottom:1px solid {{ T.glassBrd }};border-left:3px solid {{ row.borderColor }};background:{{ row.rowBg }};transition:background .25s,border-color .25s" style-hover="background:{{ T.glassBg }}">
+                    <div style="display:flex;align-items:center;gap:7px;font-family:'JetBrains Mono',monospace">
+                      <div style="width:6px;height:6px;border-radius:50%;background:{{ row.dotColor }};flex:0 0 auto"></div>
+                      <span>{{ row.sku }}</span>
+                    </div>
+                    <div>{{ row.name }}</div>
+                    <div style="font-family:'JetBrains Mono',monospace">{{ row.qty }}</div>
+                    <div>{{ row.thresholdCell }}</div>
+                    <div>{{ row.reorderCell }}</div>
+                    <div style="font-family:'JetBrains Mono',monospace;animation:{{ row.onOrderAnim }}">{{ row.onOrderDisp }}</div>
+                  </div>
+                </sc-for>
+              </div>
+
+              <div style="padding:12px 16px;border-radius:12px;background:{{ statusStripBg }};border:1px solid {{ T.glassBrd }};font-size:13.5px;color:{{ statusStripColor }};margin-bottom:20px">{{ statusStripText }}</div>
+
+              <button onClick="{{ runReorder }}" disabled="{{ runBtnDisabled }}" title="{{ runBtnTooltip }}" style="all:unset;cursor:pointer;display:inline-flex;align-items:center;gap:10px;padding:13px 24px;border-radius:12px;background:{{ relayGrad }};color:#fff;font-size:14.5px;font-weight:600;opacity:{{ runBtnOpacity }};transition:transform .2s,box-shadow .2s;box-shadow:0 6px 20px rgba(59,130,246,.28)" style-hover="transform:translateY(-2px)">
+                Run Reorder Agent
+              </button>
+            </div>
+          </sc-if>
+
+          <sc-if value="{{ isRun }}" hint-placeholder-val="{{ false }}">
+            <div>
+              <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;gap:16px;flex-wrap:wrap">
+                <h1 style="font-size:22px;font-weight:600;letter-spacing:-0.01em;margin:0">Run</h1>
+                <div style="position:relative">
+                  <button onClick="{{ toggleRunSelector }}" style="all:unset;cursor:pointer;display:flex;align-items:center;gap:10px;padding:9px 16px;border-radius:10px;background:{{ T.glassBg }};border:1px solid {{ T.glassBrd }};backdrop-filter:blur(16px);font-size:13.5px;font-weight:600;min-width:260px;justify-content:space-between">
+                    <span>{{ selectedRunLabel }}</span><span style="color:{{ T.textLo }}">▾</span>
+                  </button>
+                  <sc-if value="{{ runSelectorOpen }}">
+                    <div style="position:absolute;top:calc(100% + 6px);right:0;min-width:280px;max-height:320px;overflow-y:auto;background:{{ T.glassBg }};backdrop-filter:blur(24px);border:1px solid {{ T.glassBrdH }};border-radius:12px;box-shadow:{{ T.shadow }};z-index:15;padding:6px">
+                      <sc-for list="{{ runOptions }}" as="opt" hint-placeholder-count="3">
+                        <div onClick="{{ opt.select }}" style="cursor:pointer;padding:9px 12px;border-radius:8px;font-size:13px;display:flex;align-items:center;gap:8px;transition:background .15s" style-hover="background:{{ T.insetBg }}">
+                          <sc-if value="{{ opt.isLive }}"><div style="width:6px;height:6px;border-radius:50%;background:#60a5fa;animation:pulseHalo 1.4s infinite"></div></sc-if>
+                          <span>{{ opt.label }}</span>
+                        </div>
+                      </sc-for>
+                    </div>
+                  </sc-if>
+                </div>
+              </div>
+
+              <sc-if value="{{ runEmpty }}">
+                <div style="text-align:center;padding:60px 20px">
+                  <svg width="88" height="88" viewBox="0 0 204 204" fill="none" style="opacity:.35;margin-bottom:14px">
+                    <rect x="2" y="2" width="200" height="200" rx="44" fill="{{ T.tileBg }}" stroke="{{ T.tileBrd }}" stroke-width="2"></rect>
+                    <path d="M41 60 L71 102 L41 144" stroke="#1e40af" stroke-width="24" stroke-linecap="round" stroke-linejoin="round"></path>
+                    <path d="M87 60 L117 102 L87 144" stroke="#3b82f6" stroke-width="24" stroke-linecap="round" stroke-linejoin="round"></path>
+                    <path d="M133 60 L163 102 L133 144" stroke="#60a5fa" stroke-width="24" stroke-linecap="round" stroke-linejoin="round"></path>
+                  </svg>
+                  <div style="font-size:14.5px;color:{{ T.textLo }};margin-bottom:16px">No runs yet. Start a reorder from the Inventory tab.</div>
+                  <button onClick="{{ navInventory }}" style="all:unset;cursor:pointer;padding:11px 20px;border-radius:10px;background:{{ relayGrad }};color:#fff;font-weight:600;font-size:13.5px">Go to Inventory</button>
+                </div>
+              </sc-if>
+
+              <sc-if value="{{ runNotFound }}">
+                <div style="padding:14px 18px;border-radius:12px;background:rgba(217,119,6,.14);border:1px solid rgba(217,119,6,.35);font-size:13.5px;color:{{ T.textHi }}">Run not found.</div>
+              </sc-if>
+
+              <sc-if value="{{ showRunContent }}">
+                <div>
+                  <sc-if value="{{ hasPlan }}">
+                    <div style="background:{{ T.glassBg }};backdrop-filter:blur(16px);border:1px solid {{ T.glassBrd }};border-radius:14px;padding:16px 18px;margin-bottom:20px">
+                      <div onClick="{{ togglePlan }}" style="cursor:pointer;display:flex;align-items:center;justify-content:space-between;margin-bottom:{{ planBodyMargin }}">
+                        <span style="font-weight:600;font-size:14.5px">📋 Plan Card</span>
+                        <span style="color:{{ T.textLo }};transform:{{ planChevRot }};transition:transform .25s">▾</span>
+                      </div>
+                      <sc-if value="{{ planExpanded }}">
+                        <div style="display:flex;flex-direction:column;gap:12px">
+                          <sc-for list="{{ planRows }}" as="p" hint-placeholder-count="2">
+                            <div style="animation:rowSpring .35s ease both;padding:10px 0;border-top:1px solid {{ T.glassBrd }}">
+                              <div style="font-size:14px"><strong>{{ p.name }}</strong> <span style="font-family:'JetBrains Mono',monospace;color:{{ T.textLo }}">({{ p.sku }})</span> — Search: <span style="font-family:'JetBrains Mono',monospace;background:{{ T.insetBg }};padding:2px 6px;border-radius:6px;font-size:12.5px">{{ p.search_terms }}</span> · Qty: {{ p.quantity }}</div>
+                              <sc-if value="{{ p.hasNotes }}"><div style="font-size:12px;color:{{ T.textLo }};margin-top:4px">{{ p.notes }}</div></sc-if>
+                            </div>
+                          </sc-for>
+                        </div>
+                      </sc-if>
+                    </div>
+                  </sc-if>
+
+                  <sc-if value="{{ planLoading }}">
+                    <div style="background:{{ T.glassBg }};backdrop-filter:blur(16px);border:1px solid {{ T.glassBrd }};border-radius:14px;padding:20px 18px;margin-bottom:20px;text-align:center">
+                      <svg width="60" height="26" viewBox="0 0 64 28" fill="none" style="margin-bottom:8px">
+                        <path d="M4 6 L14 14 L4 22" stroke="#1e40af" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round" style="animation:chevronPulse 1.2s infinite"></path>
+                        <path d="M22 6 L32 14 L22 22" stroke="#3b82f6" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round" style="animation:chevronPulse 1.2s .15s infinite"></path>
+                        <path d="M40 6 L50 14 L40 22" stroke="#60a5fa" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round" style="animation:chevronPulse 1.2s .3s infinite"></path>
+                      </svg>
+                      <div style="font-size:13px;color:{{ T.textLo }}">Claude is planning the purchases…</div>
+                    </div>
+                  </sc-if>
+
+                  <sc-if value="{{ noSteps }}">
+                    <div style="padding:14px 18px;border-radius:12px;background:{{ T.glassBg }};border:1px solid {{ T.glassBrd }};font-size:13.5px;color:{{ T.textLo }}">No steps recorded yet.</div>
+                  </sc-if>
+
+                  <sc-if value="{{ hasSteps }}">
+                    <div ref="{{ timelineRef }}" onScroll="{{ onTimelineScroll }}" aria-live="polite" style="position:relative;padding-left:22px;max-height:640px;overflow-y:auto">
+                      <div style="position:absolute;left:5px;top:4px;bottom:4px;width:2px;background:{{ T.glassBrd }}"></div>
+                      <div style="position:absolute;left:5px;top:4px;width:2px;height:{{ spineFillPct }};background:{{ relayGrad }};transition:height .4s ease"></div>
+                      <sc-for list="{{ timelineGroups }}" as="grp" hint-placeholder-count="2">
+                        <div style="margin-bottom:18px;background:{{ grp.bg }};border-radius:12px;padding:10px 4px 4px 4px">
+                          <sc-if value="{{ grp.hasCaption }}"><div style="font-size:11px;font-weight:600;color:{{ T.textLo }};text-transform:uppercase;letter-spacing:.04em;padding:0 10px 8px">{{ grp.caption }}</div></sc-if>
+                          <sc-for list="{{ grp.steps }}" as="step" hint-placeholder-count="1">
+                            <div style="position:relative;margin-bottom:8px;animation:rowSpring .4s ease both">
+                              <div style="position:absolute;left:-19px;top:16px;width:9px;height:9px;border-radius:50%;background:{{ step.dotColor }};animation:{{ step.dotAnim }};box-shadow:0 0 0 3px {{ T.bg }}"></div>
+                              <div style="background:{{ T.glassBg }};backdrop-filter:blur(16px);border:1px solid {{ T.glassBrd }};border-radius:12px;padding:12px 14px" style-hover="border-color:{{ T.glassBrdH }};transform:translateY(-2px)">
+                                <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap">
+                                  <span style="font-weight:600;font-size:14px">{{ step.label }}</span>
+                                  <div style="display:flex;align-items:center;gap:10px">
+                                    <span style="font-family:'JetBrains Mono',monospace;font-size:11.5px;color:{{ T.textLo }}">Step {{ step.seq }}</span>
+                                    <span style="font-size:11px;font-weight:600;padding:3px 9px;border-radius:999px;color:#fff;background:{{ step.badgeColor }}">{{ step.statusLabel }}</span>
+                                  </div>
+                                </div>
+                                <sc-if value="{{ step.hasDetail }}"><div style="font-size:12.5px;color:{{ T.textLo }};margin-top:6px">{{ step.detail }}</div></sc-if>
+                                <sc-if value="{{ step.hasReasoning }}"><div style="font-size:12.5px;color:{{ T.textLo }};margin-top:4px;font-style:italic">"{{ step.reasoning }}"</div></sc-if>
+                                <sc-if value="{{ step.hasShot }}">
+                                  <div onClick="{{ step.openShot }}" role="img" aria-label="Screenshot: {{ step.label }}" style="cursor:pointer;margin-top:10px;border-radius:10px;overflow:hidden;background:{{ T.insetBg }};border:1px solid {{ T.glassBrd }};max-width:320px;transition:transform .2s,border-color .2s" style-hover="transform:translateY(-2px);border-color:{{ T.glassBrdH }}">
+                                    <div style="display:flex;align-items:center;gap:6px;padding:6px 10px;background:{{ T.insetBg }};border-bottom:1px solid {{ T.glassBrd }}">
+                                      <div style="width:7px;height:7px;border-radius:50%;background:#1e40af"></div><div style="width:7px;height:7px;border-radius:50%;background:#3b82f6"></div><div style="width:7px;height:7px;border-radius:50%;background:#60a5fa"></div>
+                                      <span style="font-family:'JetBrains Mono',monospace;font-size:10.5px;color:{{ T.textLo }};margin-left:6px">localhost:8090/{{ step.shotSlug }}</span>
+                                    </div>
+                                    <div style="height:110px;display:flex;align-items:center;justify-content:center;background:repeating-linear-gradient(45deg,{{ T.insetBg }} 0 10px,transparent 10px 20px);position:relative">
+                                      <div style="text-align:center">
+                                        <div style="font-size:20px;margin-bottom:4px">📷</div>
+                                        <div style="font-family:'JetBrains Mono',monospace;font-size:10.5px;color:{{ T.textLo }}">{{ step.label }}</div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </sc-if>
+                              </div>
+                            </div>
+                          </sc-for>
+                        </div>
+                      </sc-for>
+                    </div>
+                    <sc-if value="{{ newStepsWaiting }}">
+                      <div onClick="{{ jumpToBottom }}" style="cursor:pointer;text-align:center;font-size:12px;color:{{ T.textLo }};background:{{ T.glassBg }};border:1px solid {{ T.glassBrd }};border-radius:999px;padding:6px 14px;display:inline-block;margin-top:8px">↓ New steps</div>
+                    </sc-if>
+                  </sc-if>
+
+                  <sc-if value="{{ hasSummary }}">
+                    <div style="margin-top:22px">
+                      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:14px">
+                        <div style="background:{{ T.glassBg }};border:1px solid {{ T.glassBrd }};border-radius:12px;padding:14px;position:relative;overflow:hidden"><div style="position:absolute;top:0;left:0;height:2px;width:60%;background:{{ relayGrad }}"></div><div style="font-size:11px;color:{{ T.textLo }};text-transform:uppercase;letter-spacing:.04em;margin-bottom:4px">Ordered</div><div style="font-size:22px;font-weight:600;color:#60a5fa">{{ dispOrdered }}</div></div>
+                        <div style="background:{{ T.glassBg }};border:1px solid {{ T.glassBrd }};border-radius:12px;padding:14px;position:relative;overflow:hidden"><div style="position:absolute;top:0;left:0;height:2px;width:60%;background:{{ relayGrad }}"></div><div style="font-size:11px;color:{{ T.textLo }};text-transform:uppercase;letter-spacing:.04em;margin-bottom:4px">Skipped</div><div style="font-size:22px;font-weight:600;color:#60a5fa">{{ dispSkipped }}</div></div>
+                        <div style="background:{{ T.glassBg }};border:1px solid {{ T.glassBrd }};border-radius:12px;padding:14px;position:relative;overflow:hidden"><div style="position:absolute;top:0;left:0;height:2px;width:60%;background:{{ relayGrad }}"></div><div style="font-size:11px;color:{{ T.textLo }};text-transform:uppercase;letter-spacing:.04em;margin-bottom:4px">Failed</div><div style="font-size:22px;font-weight:600;color:#60a5fa">{{ dispFailed }}</div></div>
+                        <div style="background:{{ T.glassBg }};border:1px solid {{ T.glassBrd }};border-radius:12px;padding:14px;position:relative;overflow:hidden"><div style="position:absolute;top:0;left:0;height:2px;width:60%;background:{{ relayGrad }}"></div><div style="font-size:11px;color:{{ T.textLo }};text-transform:uppercase;letter-spacing:.04em;margin-bottom:4px">Total</div><div style="font-size:22px;font-weight:600;color:#60a5fa">{{ dispTotal }}</div></div>
+                      </div>
+                      <sc-if value="{{ hasOrderNumber }}">
+                        <div style="padding:12px 16px;border-radius:12px;background:rgba(22,163,74,.12);border:1px solid rgba(22,163,74,.35);font-size:13.5px;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap">
+                          <span>Order Number: <span style="font-family:'JetBrains Mono',monospace;font-weight:600">{{ orderNumberDisp }}</span></span>
+                          <button onClick="{{ viewOrder }}" style="all:unset;cursor:pointer;font-size:12.5px;font-weight:600;color:#3b82f6">View order →</button>
+                        </div>
+                      </sc-if>
+                    </div>
+                  </sc-if>
+                </div>
+              </sc-if>
+            </div>
+          </sc-if>
+
+          <sc-if value="{{ isOrders }}" hint-placeholder-val="{{ false }}">
+            <div>
+              <div style="display:flex;align-items:center;gap:12px;margin-bottom:18px">
+                <h1 style="font-size:22px;font-weight:600;letter-spacing:-0.01em;margin:0">Placed Orders</h1>
+                <div style="padding:6px 13px;border-radius:999px;background:{{ T.glassBg }};border:1px solid {{ T.glassBrd }};font-size:13px;font-weight:600">{{ orderCount }}</div>
+              </div>
+              <sc-if value="{{ ordersEmpty }}">
+                <div style="text-align:center;padding:60px 20px">
+                  <svg width="88" height="88" viewBox="0 0 204 204" fill="none" style="opacity:.35;margin-bottom:14px">
+                    <rect x="2" y="2" width="200" height="200" rx="44" fill="{{ T.tileBg }}" stroke="{{ T.tileBrd }}" stroke-width="2"></rect>
+                    <path d="M41 60 L71 102 L41 144" stroke="#1e40af" stroke-width="24" stroke-linecap="round" stroke-linejoin="round"></path>
+                    <path d="M87 60 L117 102 L87 144" stroke="#3b82f6" stroke-width="24" stroke-linecap="round" stroke-linejoin="round"></path>
+                    <path d="M133 60 L163 102 L133 144" stroke="#60a5fa" stroke-width="24" stroke-linecap="round" stroke-linejoin="round"></path>
+                  </svg>
+                  <div style="font-size:14.5px;color:{{ T.textLo }}">No orders have been placed yet.</div>
+                </div>
+              </sc-if>
+              <sc-for list="{{ orderRows }}" as="o" hint-placeholder-count="2">
+                <div style="background:{{ o.headerBg }};backdrop-filter:blur(16px);border:1px solid {{ T.glassBrd }};border-radius:14px;margin-bottom:12px;overflow:hidden">
+                  <div onClick="{{ o.toggle }}" style="cursor:pointer;display:flex;align-items:center;justify-content:space-between;padding:14px 16px">
+                    <div style="display:flex;align-items:center;gap:12px;font-size:14px">
+                      <span style="font-family:'JetBrains Mono',monospace;font-weight:600">{{ o.orderNo }}</span>
+                      <span style="color:{{ T.textLo }}">—</span><span style="font-family:'JetBrains Mono',monospace">{{ o.totalDisp }}</span>
+                      <span style="color:{{ T.textLo }}">—</span><span style="color:{{ T.textLo }};font-size:12.5px">{{ o.createdDisp }}</span>
+                    </div>
+                    <span style="color:{{ T.textLo }};transform:{{ o.chevRot }};transition:transform .25s">▾</span>
+                  </div>
+                  <sc-if value="{{ o.expanded }}">
+                    <div style="padding:0 16px 16px">
+                      <div onClick="{{ o.goRun }}" style="cursor:pointer;font-size:12.5px;color:#3b82f6;margin-bottom:10px">Run ID: {{ o.runId }} →</div>
+                      <sc-if value="{{ o.hasItems }}">
+                        <div style="background:{{ T.insetBg }};border:1px solid {{ T.glassBrd }};border-radius:10px;overflow:hidden">
+                          <div style="display:grid;grid-template-columns:1fr 2fr .6fr .8fr .8fr;padding:8px 12px;font-size:10.5px;font-weight:600;text-transform:uppercase;letter-spacing:.04em;color:{{ T.textLo }};border-bottom:1px solid {{ T.glassBrd }}"><div>SKU</div><div>Product</div><div>Qty</div><div>Unit</div><div>Total</div></div>
+                          <sc-for list="{{ o.items }}" as="it" hint-placeholder-count="2">
+                            <div style="display:grid;grid-template-columns:1fr 2fr .6fr .8fr .8fr;padding:9px 12px;font-size:12.5px;border-bottom:1px solid {{ T.glassBrd }};animation:rowSpring .3s ease both">
+                              <div style="font-family:'JetBrains Mono',monospace">{{ it.sku }}</div><div>{{ it.title }}</div><div>{{ it.qty }}</div><div style="font-family:'JetBrains Mono',monospace">{{ it.unit }}</div><div style="font-family:'JetBrains Mono',monospace">{{ it.total }}</div>
+                            </div>
+                          </sc-for>
+                        </div>
+                      </sc-if>
+                      <sc-if value="{{ o.noItems }}"><div style="font-size:12.5px;color:{{ T.textLo }}">No items in this order.</div></sc-if>
+                    </div>
+                  </sc-if>
+                </div>
+              </sc-for>
+            </div>
+          </sc-if>
+
+          <sc-if value="{{ isStorefront }}" hint-placeholder-val="{{ false }}">
+            <div>
+              <h1 style="font-size:22px;font-weight:600;letter-spacing:-0.01em;margin:0 0 18px">Storefront</h1>
+              <div style="background:{{ T.glassBg }};backdrop-filter:blur(16px);border:1px solid {{ T.glassBrd }};border-radius:14px;padding:16px 18px;margin-bottom:14px;font-size:13.5px;line-height:1.6;color:{{ T.textLo }}">
+                DemoMart is a mock storefront running alongside the RPA Order Bot. It provides a realistic e-commerce interface with search, product pages, cart, and checkout — all with data-testid attributes for reliable Playwright automation.
+              </div>
+              <div style="background:{{ T.insetBg }};border-radius:12px;padding:12px 16px;margin-bottom:20px;position:relative;font-size:13px;color:{{ T.textLo }}">
+                <div style="position:absolute;top:0;left:0;right:0;height:1px;background:{{ relayGrad }}"></div>
+                The pitch: Same automation, pointed at your vendor with a selector map + auth added.
+              </div>
+
+              <div onClick="{{ openStorefront }}" style="cursor:pointer;background:{{ T.glassBg }};backdrop-filter:blur(24px);border:1px solid {{ T.glassBrdH }};border-radius:14px;overflow:hidden;margin-bottom:20px;box-shadow:{{ T.shadow }}">
+                <div style="display:flex;align-items:center;gap:6px;padding:8px 12px;background:{{ T.insetBg }};border-bottom:1px solid {{ T.glassBrd }}">
+                  <div style="width:8px;height:8px;border-radius:50%;background:#1e40af"></div><div style="width:8px;height:8px;border-radius:50%;background:#3b82f6"></div><div style="width:8px;height:8px;border-radius:50%;background:#60a5fa"></div>
+                  <span style="font-family:'JetBrains Mono',monospace;font-size:11.5px;color:{{ T.textLo }};margin-left:8px">localhost:8090</span>
+                </div>
+                <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;padding:14px">
+                  <sc-for list="{{ previewProducts }}" as="pp" hint-placeholder-count="6">
+                    <div style="background:{{ pp.tileBg }};border:1px solid {{ T.glassBrd }};border-radius:10px;padding:10px;transition:transform .2s,background .3s" style-hover="transform:translateY(-2px)">
+                      <div style="font-size:11.5px;font-weight:500;margin-bottom:4px;line-height:1.3">{{ pp.title }}</div>
+                      <div style="display:flex;align-items:center;justify-content:space-between">
+                        <span style="font-family:'JetBrains Mono',monospace;font-size:12px;color:#60a5fa">{{ pp.price }}</span>
+                        <span style="font-size:9.5px;color:{{ T.textLo }}">{{ pp.badge }}</span>
+                      </div>
+                    </div>
+                  </sc-for>
+                </div>
+                <div style="padding:8px 16px 14px;font-size:12px;color:{{ T.textLo }}">…and {{ previewMoreCount }} more products</div>
+              </div>
+
+              <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:20px">
+                <a href="{{ storefrontHomeUrl }}" target="_blank" style="color:#3b82f6;text-decoration:none;font-size:13.5px;padding:12px 16px;background:{{ T.glassBg }};border:1px solid {{ T.glassBrd }};border-radius:10px;display:flex;align-items:center;justify-content:space-between" style-hover="border-color:{{ T.glassBrdH }}">DemoMart Home — Browse all products <span>↗</span></a>
+                <a href="{{ storefrontOrdersUrl }}" target="_blank" style="color:#3b82f6;text-decoration:none;font-size:13.5px;padding:12px 16px;background:{{ T.glassBg }};border:1px solid {{ T.glassBrd }};border-radius:10px;display:flex;align-items:center;justify-content:space-between" style-hover="border-color:{{ T.glassBrdH }}">DemoMart Orders — View placed orders on DemoMart <span>↗</span></a>
+              </div>
+
+              <div style="background:{{ T.glassBg }};backdrop-filter:blur(16px);border:1px solid {{ T.glassBrd }};border-radius:14px;padding:16px 18px">
+                <div style="font-weight:600;font-size:14.5px;margin-bottom:12px">How it works</div>
+                <div style="display:flex;flex-direction:column;gap:10px;font-size:13.5px;color:{{ T.textLo }};line-height:1.5">
+                  <div><strong style="color:{{ T.textHi }}">1.</strong> Inventory tab shows stock levels. Low-stock items are highlighted.</div>
+                  <div><strong style="color:{{ T.textHi }}">2.</strong> Run Reorder Agent triggers the browser automation pipeline.</div>
+                  <div><strong style="color:{{ T.textHi }}">3.</strong> The bot searches DemoMart, matches products using Claude AI, adds to cart, and checks out automatically.</div>
+                  <div><strong style="color:{{ T.textHi }}">4.</strong> Orders tab shows what was placed.</div>
+                  <div><strong style="color:{{ T.textHi }}">5.</strong> DemoMart is the real storefront — you can browse it directly.</div>
+                </div>
+                <div style="margin-top:14px;padding-top:14px;border-top:1px solid {{ T.glassBrd }};font-size:12.5px;color:{{ T.textLo }}">Swap the target URL, map a few selectors, add auth, and point this at any vendor portal.</div>
+              </div>
+            </div>
+          </sc-if>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <sc-if value="{{ launching }}">
+    <div style="position:fixed;left:212px;right:20px;bottom:24px;z-index:30;background:{{ T.glassBg }};backdrop-filter:blur(24px);border:1px solid {{ T.glassBrdH }};border-radius:16px;padding:16px 20px;box-shadow:{{ T.shadow }};animation:{{ launchBarAnim }}">
+      <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap">
+        <svg width="60" height="26" viewBox="0 0 64 28" fill="none">
+          <path d="M4 6 L14 14 L4 22" stroke="#1e40af" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round" style="animation:chevronPulse 1s infinite"></path>
+          <path d="M22 6 L32 14 L22 22" stroke="#3b82f6" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round" style="animation:chevronPulse 1s .12s infinite"></path>
+          <path d="M40 6 L50 14 L40 22" stroke="#60a5fa" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round" style="animation:chevronPulse 1s .24s infinite"></path>
+        </svg>
+        <span style="font-size:13.5px;font-weight:600">Starting run…</span>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <sc-for list="{{ launchChips }}" as="lc" hint-placeholder-count="3">
+            <div style="padding:5px 11px;border-radius:999px;background:rgba(220,38,38,0.14);border:1px solid rgba(220,38,38,.3);font-size:12px;font-family:'JetBrains Mono',monospace;animation:chipIn .35s ease both;animation-delay:{{ lc.delay }}">{{ lc.sku }}</div>
+          </sc-for>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ toastVisible }}">
+    <div style="position:fixed;bottom:24px;left:50%;transform:translateX(-50%);z-index:40;background:{{ toastBg }};backdrop-filter:blur(24px);border:1px solid {{ toastBorder }};border-radius:12px;padding:14px 20px;box-shadow:{{ T.shadow }};animation:rowSpring .3s ease both;max-width:420px;text-align:center">
+      <sc-for list="{{ toastLines }}" as="tl" hint-placeholder-count="1"><div style="font-size:13.5px;color:{{ T.textHi }}">{{ tl.text }}</div></sc-for>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ lightboxOpen }}">
+    <div onClick="{{ closeLightbox }}" style="position:fixed;inset:0;z-index:60;background:rgba(2,6,23,.72);backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;padding:40px">
+      <div onClick="{{ stopProp }}" style="background:{{ T.glassBg }};backdrop-filter:blur(24px);border:1px solid {{ T.glassBrdH }};border-radius:16px;overflow:hidden;max-width:640px;width:100%;box-shadow:{{ T.shadow }};animation:rowSpring .3s ease both">
+        <div style="display:flex;align-items:center;gap:6px;padding:10px 14px;background:{{ T.insetBg }};border-bottom:1px solid {{ T.glassBrd }}">
+          <div style="width:8px;height:8px;border-radius:50%;background:#1e40af"></div><div style="width:8px;height:8px;border-radius:50%;background:#3b82f6"></div><div style="width:8px;height:8px;border-radius:50%;background:#60a5fa"></div>
+          <span style="font-family:'JetBrains Mono',monospace;font-size:11.5px;color:{{ T.textLo }};margin-left:8px">localhost:8090/{{ lightboxSlug }}</span>
+          <button onClick="{{ closeLightbox }}" style="all:unset;cursor:pointer;margin-left:auto;color:{{ T.textLo }};font-size:16px">✕</button>
+        </div>
+        <div style="height:320px;display:flex;align-items:center;justify-content:center;background:repeating-linear-gradient(45deg,{{ T.insetBg }} 0 12px,transparent 12px 24px);position:relative">
+          <button onClick="{{ prevShot }}" style="all:unset;cursor:pointer;position:absolute;left:10px;font-size:22px;color:{{ T.textLo }};padding:8px" aria-label="Previous">‹</button>
+          <div style="text-align:center"><div style="font-size:32px;margin-bottom:8px">📷</div><div style="font-family:'JetBrains Mono',monospace;font-size:13px;color:{{ T.textLo }}">{{ lightboxLabel }}</div></div>
+          <button onClick="{{ nextShot }}" style="all:unset;cursor:pointer;position:absolute;right:10px;font-size:22px;color:{{ T.textLo }};padding:8px" aria-label="Next">›</button>
+        </div>
+        <div style="padding:10px 14px;font-size:12.5px;color:{{ T.textLo }};text-align:center">{{ lightboxCaption }}</div>
+      </div>
+    </div>
+  </sc-if>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;demoStartUnhealthy&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Demo behavior&quot;},&quot;autoRunOnLoad&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Demo behavior&quot;}}">
+class Component extends DCLogic {
+  state = {
+    theme: 'dark', splash: true, splashOpacity: 1,
+    panel: 'inventory', panelDir: 1,
+    inventory: [], edits: {}, editingKey: null, shakeKey: null,
+    savingThresholds: false, dirtyKeys: {},
+    toast: null, healingSkus: {},
+    launching: false, launchExiting: false, launchSkus: [],
+    runs: [], selectedRunId: null, currentRun: null, planLoading: false,
+    liveRunId: null, liveRunDone: false, runSelectorOpen: false, planExpanded: true,
+    autoScrollBottom: true, newStepsWaiting: false,
+    orders: [], newOrderNo: null,
+    health: { db_ok: true, demomart_ok: true }, bannerVisible: false,
+    lightbox: null, logoPulseKey: 0, pillPulseKey: 0,
+    storefrontInfo: null, storefrontPreview: null, previewHighlightIdx: 0,
+    dispOrdered: 0, dispSkipped: 0, dispFailed: 0, dispTotal: 0,
+  };
+  timelineRef = React.createRef();
+
+  async componentDidMount() {
+    const api = await import('./adapter.js');
+    this.api = api;
+    if (this.props.demoStartUnhealthy) { api.__debugToggleDemomart(); }
+    const saved = localStorage.getItem('vrai-theme');
+    const theme = saved || (window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
+    this.setState({ theme });
+    setTimeout(() => this.setState({ splashOpacity: 0 }), 1300);
+    setTimeout(() => this.setState({ splash: false }), 1750);
+    await this.refreshAll();
+    window.addEventListener('keydown', this.onKeyGlobal);
+    this._previewTimer = setInterval(() => {
+      if (this._previewPaused) return;
+      this.setState((s) => ({ previewHighlightIdx: (s.previewHighlightIdx + 1) % 6 }));
+    }, 3000);
+    if (this.props.autoRunOnLoad) setTimeout(() => this.runReorder(), 2200);
+  }
+  componentWillUnmount() {
+    window.removeEventListener('keydown', this.onKeyGlobal);
+    if (this._unsub) this._unsub();
+    clearInterval(this._previewTimer);
+  }
+
+  onKeyGlobal = (e) => {
+    if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === 'h') { this.toggleHealthDebug(); return; }
+    if (this.state.lightbox) {
+      if (e.key === 'Escape') this.closeLightbox();
+      if (e.key === 'ArrowRight') this.stepShot(1);
+      if (e.key === 'ArrowLeft') this.stepShot(-1);
+    }
+  };
+
+  async refreshAll() {
+    const [inv, runs, orders, health, info, preview] = await Promise.all([
+      this.api.getInventory(), this.api.listRuns(), this.api.listOrders(),
+      this.api.getHealth(), this.api.getStorefrontInfo(), this.api.getStorefrontPreview(),
+    ]);
+    this.setState({ inventory: inv, runs, orders, health, storefrontInfo: info, storefrontPreview: preview, bannerVisible: !health.demomart_ok });
+    if (!this.state.selectedRunId && runs.length) this.selectRun(runs[0].id);
+  }
+
+  toggleTheme = () => {
+    const t = this.state.theme === 'dark' ? 'light' : 'dark';
+    localStorage.setItem('vrai-theme', t);
+    this.setState({ theme: t });
+  };
+
+  pulseLogo = () => this.setState((s) => ({ logoPulseKey: s.logoPulseKey + 1 }));
+
+  goToPanel = (panel) => {
+    const order = { inventory: 0, run: 1, orders: 2, storefront: 3 };
+    const dir = order[panel] >= order[this.state.panel] ? 1 : -1;
+    this.setState({ panel, panelDir: dir, runSelectorOpen: false });
+  };
+  navInventory = () => this.goToPanel('inventory');
+  navRun = () => this.goToPanel('run');
+  navOrders = () => this.goToPanel('orders');
+  navStorefront = () => this.goToPanel('storefront');
+  goToLiveRun = () => { if (this.state.liveRunId) { this.selectRun(this.state.liveRunId); this.goToPanel('run'); } };
+
+  jumpToInventory = (sku) => { this.goToPanel('inventory'); this.setState({ highlightSku: sku }); setTimeout(() => this.setState({ highlightSku: null }), 1500); };
+
+  effectiveItem(item) {
+    const e = this.state.edits[item.sku];
+    return { threshold: e ? e.reorder_threshold : item.reorder_threshold, reorderQty: e ? e.reorder_qty : item.reorder_qty };
+  }
+
+  startEdit = (sku, field) => this.setState({ editingKey: sku + ':' + field });
+  commitEdit = (sku, field, raw) => {
+    const val = parseInt(raw, 10);
+    if (isNaN(val) || val < 0) { this.setState({ shakeKey: sku + ':' + field }); setTimeout(() => this.setState({ shakeKey: null }), 400); return; }
+    this.setState((s) => {
+      const item = s.inventory.find((i) => i.sku === sku);
+      const cur = s.edits[sku] || { reorder_threshold: item.reorder_threshold, reorder_qty: item.reorder_qty };
+      const next = { ...cur, [field]: val };
+      const edits = { ...s.edits, [sku]: next };
+      if (next.reorder_threshold === item.reorder_threshold && next.reorder_qty === item.reorder_qty) delete edits[sku];
+      return { edits, editingKey: null };
+    });
+  };
+
+  saveThresholds = async () => {
+    this.setState({ savingThresholds: true });
+    const payload = Object.entries(this.state.edits).map(([sku, v]) => ({ sku, reorder_threshold: v.reorder_threshold, reorder_qty: v.reorder_qty }));
+    await this.api.saveThresholds(payload);
+    await new Promise((r) => setTimeout(r, 700));
+    this.setState((s) => ({
+      inventory: s.inventory.map((i) => s.edits[i.sku] ? { ...i, ...s.edits[i.sku] } : i),
+      edits: {}, savingThresholds: false,
+      toast: { lines: ['Thresholds saved!'] },
+    }));
+    setTimeout(() => this.setState({ toast: null }), 2600);
+  };
+
+  runReorder = async () => {
+    const low = this.state.inventory.filter((i) => { const e = this.effectiveItem(i); return i.qty + i.on_order < e.threshold; });
+    if (!low.length) return;
+    this.setState({ launching: true, launchSkus: low.map((i) => i.sku) });
+    await new Promise((r) => setTimeout(r, 950));
+    const res = await this.api.startRun();
+    if (!res.ok) {
+      this.setState({ launching: false, toast: { lines: ['Reorder skipped: ' + res.reason] } });
+      setTimeout(() => this.setState({ toast: null }), 3200);
+      return;
+    }
+    this.setState({ launchExiting: true });
+    await new Promise((r) => setTimeout(r, 420));
+    this.setState({ launching: false, launchExiting: false, launchSkus: [], liveRunId: res.run_id, liveRunDone: false });
+    this.selectRun(res.run_id, true);
+    this.goToPanel('run');
+  };
+
+  selectRun = async (id, isNewLive) => {
+    this.setState({ selectedRunId: id, runSelectorOpen: false, planExpanded: true });
+    const run = await this.api.getRun(id);
+    if (!run) { this.setState({ currentRun: null }); return; }
+    this.setState({ currentRun: run, planLoading: isNewLive && !run.plan_json });
+    this.animateSummary(run.summary_json);
+    if (run.status === 'running' || isNewLive) {
+      if (this._unsub) this._unsub();
+      this._unsub = this.api.streamRun(id, {
+        onPlan: (plan) => this.setState((s) => ({ currentRun: { ...s.currentRun, plan_json: plan }, planLoading: false })),
+        onStep: (step) => this.setState((s) => {
+          const steps = s.currentRun.steps.slice();
+          const idx = steps.findIndex((x) => x.id === step.id);
+          if (idx >= 0) steps[idx] = { ...steps[idx], ...step }; else steps.push(step);
+          const atBottom = s.autoScrollBottom;
+          setTimeout(() => { if (atBottom && this.timelineRef.current) this.timelineRef.current.scrollTop = this.timelineRef.current.scrollHeight; }, 30);
+          return { currentRun: { ...s.currentRun, steps }, newStepsWaiting: !atBottom };
+        }),
+        onSummary: async (summary) => {
+          this.setState((s) => ({ currentRun: { ...s.currentRun, summary_json: summary }, newOrderNo: summary.order_number }));
+          this.animateSummary(summary);
+          const [inv, orders] = await Promise.all([this.api.getInventory(), this.api.listOrders()]);
+          const healing = {};
+          inv.forEach((i) => { const old = this.state.inventory.find((o) => o.sku === i.sku); if (old && old.on_order !== i.on_order) healing[i.sku] = true; });
+          this.setState({ inventory: inv, orders, healingSkus: healing });
+          setTimeout(() => this.setState({ healingSkus: {} }), 1400);
+          setTimeout(() => this.setState({ newOrderNo: null }), 6000);
+        },
+        onStatus: (st) => {
+          this.setState((s) => ({ currentRun: { ...s.currentRun, status: st.status } }));
+          if (st.status === 'succeeded') { this.setState({ liveRunDone: true }); setTimeout(() => this.setState({ liveRunId: null, liveRunDone: false }), 5000); this.refreshRunsList(); }
+        },
+      });
+    }
+  };
+  refreshRunsList = async () => { const runs = await this.api.listRuns(); this.setState({ runs }); };
+
+  animateSummary = (summary) => {
+    if (!summary) { this.setState({ dispOrdered: 0, dispSkipped: 0, dispFailed: 0, dispTotal: 0 }); return; }
+    const targets = { dispOrdered: summary.ordered, dispSkipped: summary.skipped, dispFailed: summary.failed, dispTotal: summary.total };
+    const start = performance.now(); const dur = 700;
+    const tick = (now) => {
+      const p = Math.min(1, (now - start) / dur);
+      this.setState({
+        dispOrdered: Math.round(targets.dispOrdered * p), dispSkipped: Math.round(targets.dispSkipped * p),
+        dispFailed: Math.round(targets.dispFailed * p), dispTotal: +(targets.dispTotal * p).toFixed(2),
+      });
+      if (p < 1) requestAnimationFrame(tick);
+    };
+    requestAnimationFrame(tick);
+  };
+
+  togglePlan = () => this.setState((s) => ({ planExpanded: !s.planExpanded }));
+  toggleRunSelector = () => this.setState((s) => ({ runSelectorOpen: !s.runSelectorOpen }));
+  onTimelineScroll = (e) => {
+    const el = e.target; const atBottom = el.scrollTop + el.clientHeight >= el.scrollHeight - 60;
+    this.setState({ autoScrollBottom: atBottom, newStepsWaiting: atBottom ? false : this.state.newStepsWaiting });
+  };
+  jumpToBottom = () => { if (this.timelineRef.current) this.timelineRef.current.scrollTop = this.timelineRef.current.scrollHeight; this.setState({ newStepsWaiting: false, autoScrollBottom: true }); };
+
+  openLightbox = (seq) => this.setState({ lightbox: { seq } });
+  closeLightbox = () => this.setState({ lightbox: null });
+  stopProp = (e) => e.stopPropagation();
+  stepShot = (dir) => {
+    const shots = (this.state.currentRun?.steps || []).filter((s) => s.screenshot_path).sort((a, b) => a.seq - b.seq);
+    const idx = shots.findIndex((s) => s.seq === this.state.lightbox.seq);
+    const next = shots[(idx + dir + shots.length) % shots.length];
+    if (next) this.setState({ lightbox: { seq: next.seq } });
+  };
+  nextShot = () => this.stepShot(1);
+  prevShot = () => this.stepShot(-1);
+
+  toggleOrderExpand = (no) => this.setState((s) => ({ orders: s.orders.map((o) => o.demomart_order_no === no ? { ...o, _expanded: !o._expanded } : o) }));
+  goToRunFromOrder = (runId) => { this.selectRun(runId); this.goToPanel('run'); };
+  viewOrder = () => this.goToPanel('orders');
+
+  toggleHealthDebug = async () => { this.api.__debugToggleDemomart(); const wasDown = !this.state.health.demomart_ok; const health = await this.api.getHealth(); this.setState({ health, bannerVisible: !health.demomart_ok }); };
+
+  openStorefront = () => window.open(this.state.storefrontInfo?.url || 'http://localhost:8090', '_blank');
+
+  renderVals() {
+    const s = this.state;
+    const THEMES = {
+      dark: { bg: '#0f172a', surface: '#1e293b', glassBg: 'rgba(30,41,59,0.55)', glassBg2: 'transparent', glassBrd: 'rgba(96,165,250,0.14)', glassBrdH: 'rgba(96,165,250,0.30)', insetBg: 'rgba(15,23,42,0.50)', textHi: '#f1f5f9', textLo: '#94a3b8', shadow: '0 8px 32px rgba(2,6,23,0.35)', tileBg: '#1e293b', tileBrd: '#1e293b', glow1: 'rgba(59,130,246,0.10)', glow2: 'rgba(30,64,175,0.12)' },
+      light: { bg: '#f8fafc', surface: '#eff6ff', glassBg: 'rgba(239,246,255,0.60)', glassBg2: 'transparent', glassBrd: 'rgba(59,130,246,0.18)', glassBrdH: 'rgba(30,64,175,0.35)', insetBg: 'rgba(219,234,254,0.45)', textHi: '#0f172a', textLo: '#475569', shadow: '0 8px 32px rgba(30,64,175,0.10)', tileBg: '#eff6ff', tileBrd: '#dbeafe', glow1: 'rgba(96,165,250,0.12)', glow2: 'rgba(219,234,254,0.8)' },
+    };
+    const T = THEMES[s.theme];
+    const relayGrad = 'linear-gradient(90deg,#1e40af,#3b82f6,#60a5fa)';
+    const mono = "'JetBrains Mono',monospace";
+
+    const chevAnim = (i) => s.logoPulseKey ? `chevronPulse .5s ${i * 0.12}s 1 both` : 'none';
+    const pillChevAnim = (i) => `chevronPulse 1.4s ${i * 0.12}s infinite`;
+
+    const inv = s.inventory.map((item) => { const e = this.effectiveItem(item); return { ...item, threshold: e.threshold, reorderQty: e.reorderQty, low: item.qty + item.on_order < e.threshold }; });
+    const lowItemsRaw = inv.filter((i) => i.low);
+    const skuCount = inv.length, lowCount = lowItemsRaw.length;
+
+    const rows = inv.slice().sort((a, b) => a.sku.localeCompare(b.sku)).map((item) => {
+      const dirty = !!s.edits[item.sku];
+      const cellFor = (field, val) => {
+        const key = item.sku + ':' + field;
+        if (s.editingKey === key) {
+          return React.createElement('input', {
+            type: 'number', defaultValue: val, autoFocus: true,
+            onBlur: (e) => this.commitEdit(item.sku, field, e.target.value),
+            onKeyDown: (e) => { if (e.key === 'Enter') this.commitEdit(item.sku, field, e.target.value); if (e.key === 'Escape') this.setState({ editingKey: null }); },
+            style: { width: '56px', background: T.insetBg, border: '1px solid ' + T.glassBrdH, borderRadius: '6px', color: T.textHi, padding: '4px 6px', fontFamily: mono, fontSize: '13px', animation: s.shakeKey === key ? 'shakeX .4s' : 'none' },
+          });
+        }
+        return React.createElement('span', {
+          onClick: () => this.startEdit(item.sku, field),
+          style: { cursor: 'pointer', fontFamily: mono, padding: '3px 8px', borderRadius: '6px', border: '1px dashed ' + (dirty ? '#60a5fa' : 'transparent'), display: 'inline-flex', alignItems: 'center', gap: '5px' },
+        }, val, dirty ? React.createElement('span', { style: { width: '5px', height: '5px', borderRadius: '50%', background: '#60a5fa', display: 'inline-block' } }) : null);
+      };
+      return {
+        sku: item.sku, name: item.name, qty: item.qty,
+        thresholdCell: cellFor('reorder_threshold', item.threshold),
+        reorderCell: cellFor('reorder_qty', item.reorderQty),
+        onOrderDisp: item.on_order, onOrderAnim: s.healingSkus[item.sku] ? 'greenSweep 1.3s ease' : 'none',
+        borderColor: item.low ? '#dc2626' : 'transparent',
+        rowBg: item.low ? 'rgba(220,38,38,0.10)' : (s.highlightSku === item.sku ? 'rgba(96,165,250,0.18)' : 'transparent'),
+        dotColor: item.low ? '#dc2626' : T.textLo,
+      };
+    });
+
+    const dirtyCount = Object.keys(s.edits).length;
+    const lowChipLabel = lowCount > 0 ? lowCount + ' below threshold' : 'All stocked';
+    const statusStripText = lowCount > 0 ? lowCount + ' item(s) below reorder threshold.' : 'All inventory items are adequately stocked. No reorder needed.';
+
+    const runOptions = s.runs.map((r) => ({ id: r.id, isLive: r.id === s.liveRunId, label: 'Run #' + r.id + ' (' + new Date(r.created_at).toLocaleString() + ')', select: () => this.selectRun(r.id) }));
+    const selectedRun = s.runs.find((r) => r.id === s.selectedRunId);
+    const selectedRunLabel = selectedRun ? 'Run #' + selectedRun.id + ' (' + new Date(selectedRun.created_at).toLocaleString() + ')' : 'Select a run';
+
+    const cr = s.currentRun;
+    const planRows = (cr?.plan_json || []).map((p) => ({ ...p, hasNotes: !!p.notes }));
+    const STATUS_COLOR = { running: '#6b7280', succeeded: '#16a34a', matched: '#16a34a', skipped: '#d97706', failed: '#dc2626' };
+    const steps = (cr?.steps || []).slice().sort((a, b) => a.seq - b.seq);
+    const doneCount = steps.filter((st) => st.status !== 'running').length;
+    const groupsMap = {};
+    steps.forEach((st) => {
+      const gk = st.seq >= 900 ? 'checkout' : Math.floor((st.seq - 1) / 10);
+      if (!groupsMap[gk]) groupsMap[gk] = [];
+      groupsMap[gk].push(st);
+    });
+    const timelineGroups = Object.keys(groupsMap).map((gk) => {
+      const idx = gk === 'checkout' ? -1 : parseInt(gk, 10);
+      const caption = idx >= 0 && cr?.plan_json?.[idx] ? cr.plan_json[idx].name : (gk === 'checkout' ? 'Checkout' : '');
+      return {
+        key: gk, caption, hasCaption: !!caption, bg: 'transparent',
+        steps: groupsMap[gk].map((st) => ({
+          ...st, dotColor: STATUS_COLOR[st.status] || '#6b7280', dotAnim: st.status === 'running' ? 'pulseHalo 1.3s infinite' : 'none',
+          statusLabel: st.status, badgeColor: STATUS_COLOR[st.status] || '#6b7280',
+          hasDetail: !!st.detail, hasReasoning: !!st.reasoning, hasShot: !!st.screenshot_path,
+          shotSlug: st.screenshot_path || '', openShot: () => this.openLightbox(st.seq),
+        })),
+      };
+    });
+
+    const summary = cr?.summary_json;
+    const orderRows = s.orders.map((o) => ({
+      orderNo: o.demomart_order_no, totalDisp: '$' + o.total.toFixed(2),
+      createdDisp: o.created_at ? new Date(o.created_at).toLocaleString() : 'N/A',
+      runId: o.run_id, chevRot: o._expanded ? 'rotate(180deg)' : 'rotate(0)', expanded: !!o._expanded,
+      headerBg: o.demomart_order_no === s.newOrderNo ? 'linear-gradient(90deg, rgba(30,64,175,.18), rgba(96,165,250,.18))' : T.glassBg,
+      toggle: () => this.toggleOrderExpand(o.demomart_order_no), goRun: () => this.goToRunFromOrder(o.run_id),
+      hasItems: o.items.length > 0, noItems: o.items.length === 0,
+      items: o.items.map((it) => ({ sku: it.sku || '-', title: it.product_title, qty: it.qty, unit: '$' + it.unit_price.toFixed(2), total: '$' + (it.qty * it.unit_price).toFixed(2) })),
+    }));
+
+    const lightboxStep = s.lightbox ? steps.find((st) => st.seq === s.lightbox.seq) : null;
+
+    const previewProducts = (s.storefrontPreview?.products || []).map((p, i) => ({
+      title: p.title, price: '$' + p.price.toFixed(2), badge: p.stock_badge,
+      tileBg: i === s.previewHighlightIdx ? T.glassBrdH.replace('0.30', '0.22').replace('0.35', '0.22') : T.insetBg,
+    }));
+
+    const navColors = (key) => ({
+      border: s.panel === key ? relayGrad.match(/#[0-9a-f]{6}/gi)[1] : 'transparent',
+      bg: s.panel === key ? T.insetBg : 'transparent',
+      icon: s.panel === key ? '#60a5fa' : T.textLo,
+      text: s.panel === key ? T.textHi : T.textLo,
+    });
+    const nInv = navColors('inventory'), nRun = navColors('run'), nOrd = navColors('orders'), nSto = navColors('storefront');
+
+    return {
+      T, relayGrad, splash: s.splash, splashOpacity: s.splashOpacity,
+      logoAnim0: chevAnim(0), logoAnim1: chevAnim(1), logoAnim2: chevAnim(2), pulseLogo: this.pulseLogo,
+      toggleTheme: this.toggleTheme, toggleKnobLeft: s.theme === 'dark' ? '2px' : '28px', toggleGlyph: s.theme === 'dark' ? '🌙' : '☀️',
+      healthColor: s.health.demomart_ok && s.health.db_ok ? '#16a34a' : '#d97706',
+      healthPulseAnim: s.health.demomart_ok && s.health.db_ok ? 'none' : 'pulseHalo 1.5s infinite',
+      healthTooltip: s.health.demomart_ok && s.health.db_ok ? 'All systems healthy' : 'DemoMart storefront unreachable',
+      bannerVisible: s.bannerVisible, bannerText: s.health.error || '',
+
+      runPillVisible: !!s.liveRunId, runPillText: s.liveRunDone ? 'Run #' + s.liveRunId + ' complete' : 'Run #' + s.liveRunId + ' · running',
+      runPillBg: s.liveRunDone ? 'rgba(22,163,74,0.22)' : T.insetBg, goToLiveRun: this.goToLiveRun,
+      pillChevAnim0: pillChevAnim(0), pillChevAnim1: pillChevAnim(1), pillChevAnim2: pillChevAnim(2),
+
+      navInventory: this.navInventory, navRun: this.navRun, navOrders: this.navOrders, navStorefront: this.navStorefront,
+      navBorder0: nInv.border, navBg0: nInv.bg, navIconColor0: nInv.icon, navTextColor0: nInv.text,
+      navBorder1: nRun.border, navBg1: nRun.bg, navIconColor1: nRun.icon, navTextColor1: nRun.text,
+      navBorder2: nOrd.border, navBg2: nOrd.bg, navIconColor2: nOrd.icon, navTextColor2: nOrd.text,
+      navBorder3: nSto.border, navBg3: nSto.bg, navIconColor3: nSto.icon, navTextColor3: nSto.text,
+
+      hasLowItems: lowItemsRaw.length > 0, noLowStyle: lowItemsRaw.length > 0 ? 'display:none' : 'padding:8px 6px',
+      lowItems: lowItemsRaw.map((i) => ({ sku: i.sku, jump: () => this.jumpToInventory(i.sku) })),
+
+      isInventory: s.panel === 'inventory', isRun: s.panel === 'run', isOrders: s.panel === 'orders', isStorefront: s.panel === 'storefront',
+      panel: s.panel, panelAnim: s.panelDir > 0 ? 'panelSlideInFwd' : 'panelSlideInBack',
+
+      skuCount, lowChipLabel, lowChipBg: lowCount > 0 ? 'rgba(220,38,38,0.14)' : 'rgba(22,163,74,0.14)', lowChipColor: lowCount > 0 ? '#dc2626' : '#16a34a', lowChipPulse: lowCount > 0 ? 'pulseHalo 2s infinite' : 'none',
+      rows, statusStripText, statusStripBg: lowCount > 0 ? 'rgba(217,119,6,0.12)' : 'rgba(59,130,246,0.10)', statusStripColor: T.textHi,
+      runBtnDisabled: lowCount === 0, runBtnOpacity: lowCount === 0 ? 0.4 : 1, runBtnTooltip: lowCount === 0 ? 'All inventory items are adequately stocked. No reorder needed.' : '', runReorder: this.runReorder,
+
+      launching: s.launching, launchBarAnim: s.launchExiting ? 'launchExit .4s ease both' : 'chipIn .3s ease both',
+      launchChips: s.launchSkus.map((sku, i) => ({ sku, delay: (i * 0.08) + 's' })),
+
+      dirtyCount, savingThresholds: s.savingThresholds, saveThresholds: this.saveThresholds,
+
+      toastVisible: !!s.toast, toastLines: s.toast ? s.toast.lines.map((t) => ({ text: t })) : [],
+      toastBg: T.glassBg, toastBorder: T.glassBrdH,
+
+      runSelectorOpen: s.runSelectorOpen, toggleRunSelector: this.toggleRunSelector, runOptions, selectedRunLabel,
+      runEmpty: s.runs.length === 0, runNotFound: s.selectedRunId != null && !cr && s.runs.length > 0,
+      showRunContent: !!cr,
+      hasPlan: !!cr?.plan_json, planExpanded: s.planExpanded, planBodyMargin: s.planExpanded ? '10px' : '0', planChevRot: s.planExpanded ? 'rotate(180deg)' : 'rotate(0)', togglePlan: this.togglePlan, planRows,
+      planLoading: s.planLoading && !cr?.plan_json,
+      noSteps: !!cr && steps.length === 0 && !s.planLoading,
+      hasSteps: steps.length > 0, timelineGroups, timelineRef: this.timelineRef, onTimelineScroll: this.onTimelineScroll,
+      spineFillPct: steps.length ? Math.round((doneCount / steps.length) * 100) + '%' : '0%',
+      newStepsWaiting: s.newStepsWaiting, jumpToBottom: this.jumpToBottom,
+
+      hasSummary: !!summary, dispOrdered: s.dispOrdered, dispSkipped: s.dispSkipped, dispFailed: s.dispFailed, dispTotal: '$' + (s.dispTotal || 0).toFixed(2),
+      hasOrderNumber: !!summary?.order_number, orderNumberDisp: summary?.order_number || '', viewOrder: this.viewOrder,
+
+      orderCount: s.orders.length + (s.orders.length === 1 ? ' order' : ' orders'), ordersEmpty: s.orders.length === 0, orderRows,
+
+      previewProducts, previewMoreCount: (s.storefrontPreview?.total_count || 25) - 6,
+      storefrontHomeUrl: s.storefrontInfo?.url || 'http://localhost:8090',
+      storefrontOrdersUrl: (s.storefrontInfo?.url || 'http://localhost:8090') + '/orders',
+      openStorefront: this.openStorefront,
+
+      lightboxOpen: !!s.lightbox, lightboxSlug: lightboxStep?.screenshot_path || '', lightboxLabel: lightboxStep?.label || '',
+      lightboxCaption: lightboxStep ? lightboxStep.label + ' · Step ' + lightboxStep.seq : '',
+      closeLightbox: this.closeLightbox, stopProp: this.stopProp, nextShot: this.nextShot, prevShot: this.prevShot,
+      onGlobalKeyDown: () => {},
+    };
+  }
+}
+
+</script>
+</body>
+</html>
