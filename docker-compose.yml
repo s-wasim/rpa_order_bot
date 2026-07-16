@@ -26,7 +26,9 @@ services:
       - rpa-net
 
   app:
-    build: ./app
+    build:
+      context: .
+      dockerfile: app/Dockerfile
     ports:
       - "8501:8501"
     environment:
