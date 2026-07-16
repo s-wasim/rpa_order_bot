@@ -9,4 +9,4 @@ COPY . .
 # The Playwright base image already ships a non-root user `pwuser` (uid 1000).
 RUN mkdir -p /app/data && chown -R pwuser:pwuser /app
 USER pwuser
-CMD ["streamlit", "run", "main.py", "--server.port", "8501", "--server.address", "0.0.0.0"]
+CMD ["uvicorn", "app.server:app", "--host", "0.0.0.0", "--port", "8501"]
