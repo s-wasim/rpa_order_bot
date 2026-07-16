@@ -10,7 +10,7 @@ from app.steps.match import match_product
 from app.steps.cart import add_to_cart
 
 
-def _save_step(run_id: int, seq: int, label: str, detail: str, status: str, screenshot_path: str = None):
+def _save_step(run_id: int, seq: int, label: str, detail: str, status: str, screenshot_path: str = None, reasoning: str = None):
     with get_session() as session:
         step = RunStep(
             run_id=run_id,
@@ -19,6 +19,7 @@ def _save_step(run_id: int, seq: int, label: str, detail: str, status: str, scre
             detail=detail,
             status=status,
             screenshot_path=screenshot_path,
+            reasoning=reasoning,
         )
         session.add(step)
 
@@ -54,7 +55,7 @@ def browse_and_match_item(state: OrderState) -> OrderState:
             "unit_price": None,
             "quantity": item["quantity"],
         }
-        _save_step(state["run_id"], seq + 1, f"Skip {item['name']}", reasoning, "skipped", ss)
+        _save_step(state["run_id"], seq + 1, f"Skip {item['name']}", reasoning, "skipped", ss, reasoning=reasoning)
         return {
             **state,
             "item_results": [*state.get("item_results", []), result],
@@ -82,7 +83,7 @@ def browse_and_match_item(state: OrderState) -> OrderState:
             state["run_id"], seq + 1,
             f"Cart {item['name']}",
             f"Added {item['quantity']}× {candidate['title']} to cart",
-            "succeeded", ss2,
+            "succeeded", ss2, reasoning=reasoning,
         )
     except StepError as e:
         try:
@@ -102,7 +103,7 @@ def browse_and_match_item(state: OrderState) -> OrderState:
                 state["run_id"], seq + 1,
                 f"Cart {item['name']}",
                 f"Added {item['quantity']}× {candidate['title']} to cart (after retry)",
-                "succeeded", ss2,
+                "succeeded", ss2, reasoning=f"Retry succeeded: {reasoning}",
             )
         except StepError as e2:
             result = {
@@ -114,7 +115,7 @@ def browse_and_match_item(state: OrderState) -> OrderState:
                 "unit_price": candidate["price"],
                 "quantity": item["quantity"],
             }
-            _save_step(state["run_id"], seq + 1, f"Cart {item['name']}", f"Failed: {e2}", "failed", ss)
+            _save_step(state["run_id"], seq + 1, f"Cart {item['name']}", f"Failed: {e2}", "failed", ss, reasoning=f"Cart add failed: {e2}")
 
     return {
         **state,

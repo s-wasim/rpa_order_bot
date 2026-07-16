@@ -97,6 +97,19 @@ def test_crud_order(db_session):
     assert fetched.items[0].qty == 2
 
 
+def test_run_step_reasoning_column(db_session):
+    run = Run(status="running")
+    db_session.add(run)
+    db_session.flush()
+
+    step = RunStep(run_id=run.id, seq=1, label="Cart item", status="succeeded", reasoning="Exact title match.")
+    db_session.add(step)
+    db_session.commit()
+
+    fetched = db_session.query(RunStep).filter_by(id=step.id).one()
+    assert fetched.reasoning == "Exact title match."
+
+
 def test_cascade_delete(db_session):
     run = Run(status="running")
     db_session.add(run)

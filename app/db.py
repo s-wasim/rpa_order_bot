@@ -46,6 +46,7 @@ class RunStep(Base):
     detail = Column(Text, nullable=True)
     screenshot_path = Column(String, nullable=True)
     status = Column(String, nullable=False, default="running")
+    reasoning = Column(Text, nullable=True)
     created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
 
     run = relationship("Run", back_populates="steps")
